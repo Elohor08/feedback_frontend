@@ -127,6 +127,11 @@ const FeedbackForm = () => {
         </p>
       )}
 
+          {step === 3 && (
+        <p className="mb-2 font-semibold text-lg">
+          How would you rate the following? (1 - Poor, 5 - Excellent)
+        </p>
+      )}
       {pages[step].map(([name, label]) => (
         <div key={name}>
           <label className="block font-semibold mb-1">{label}</label>
