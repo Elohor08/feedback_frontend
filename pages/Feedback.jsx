@@ -127,11 +127,12 @@ const FeedbackForm = () => {
         </p>
       )}
 
-          {step === 3 && (
+      {step === 3 && (
         <p className="mb-2 font-semibold text-lg">
           How would you rate the following? (1 - Poor, 5 - Excellent)
         </p>
       )}
+
       {pages[step].map(([name, label]) => (
         <div key={name}>
           <label className="block font-semibold mb-1">{label}</label>
@@ -141,12 +142,18 @@ const FeedbackForm = () => {
               name={name}
               value={form[name]}
               onChange={handleChange}
-              className="w-full p-2 border border-white text-black rounded-md"
+              className="w-full p-2 border border-white text-white bg-blue-700 rounded-md appearance-none"
               required
             >
-              <option value="">-- Select Department / Team --</option>
+              <option className="bg-blue-700 text-white" value="">
+                -- Select Department / Team --
+              </option>
               {departments.map((dep) => (
-                <option key={dep} value={dep}>
+                <option
+                  key={dep}
+                  value={dep}
+                  className="bg-blue-700 text-white"
+                >
                   {dep}
                 </option>
               ))}
@@ -156,23 +163,35 @@ const FeedbackForm = () => {
               name={name}
               value={form[name]}
               onChange={handleChange}
-              className="w-full p-2 border border-white text-black rounded-md"
+              className="w-full p-2 border border-white text-white bg-blue-700 rounded-md appearance-none"
               required
             >
-              <option value="">-- Select an option --</option>
-              <option value="Yes, please reach out">Yes, please reach out</option>
-              <option value="No, I am good">No, I am good</option>
-              <option value="Only if necessary">Only if necessary</option>
+              <option className="bg-blue-700 text-white" value="">
+                -- Select an option --
+              </option>
+              <option className="bg-blue-700 text-white" value="Yes, please reach out">
+                Yes, please reach out
+              </option>
+              <option className="bg-blue-700 text-white" value="No, I am good">
+                No, I am good
+              </option>
+              <option className="bg-blue-700 text-white" value="Only if necessary">
+                Only if necessary
+              </option>
             </select>
           ) : isRating(name) ? (
             <select
               name={name}
               value={form.ratings[name]}
               onChange={handleChange}
-              className="w-full p-2 border border-white text-black rounded-md"
+              className="w-full p-2 border border-white text-white bg-blue-700 rounded-md appearance-none"
             >
               {[1, 2, 3, 4, 5].map((num) => (
-                <option key={num} value={num}>
+                <option
+                  key={num}
+                  value={num}
+                  className="bg-blue-700 text-white"
+                >
                   {num}
                 </option>
               ))}
@@ -183,7 +202,7 @@ const FeedbackForm = () => {
               value={form[name]}
               onChange={handleChange}
               rows={3}
-              className="w-full p-2 border border-white text-white rounded-md"
+              className="w-full p-2 border border-white text-white bg-blue-700 rounded-md"
               required={name !== "shoutOuts"}
             />
           )}
@@ -204,7 +223,7 @@ const FeedbackForm = () => {
         {step === pages.length - 1 ? (
           <button
             type="submit"
-            className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded"
+            className="bg-white text-blue-700  py-2 px-4 rounded"
           >
             Submit
           </button>
