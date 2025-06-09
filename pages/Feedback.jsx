@@ -1,198 +1,217 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 const FeedbackForm = () => {
-  const [form, setForm] = useState({
-    fullName: '',
-    department: '',
-    wentWell: '',
-    didntGoWell: '',
-    challenges: '',
-    lessons: '',
-    shoutOuts: '',
-    startDoing: '',
-    stopDoing: '',
-    continueDoing: '',
+  const initialForm = {
+    fullName: "",
+    department: "",
+    wentWell: "",
+    didntGoWell: "",
+    challenges: "",
+    lessons: "",
+    shoutOuts: "",
+    startDoing: "",
+    stopDoing: "",
+    continueDoing: "",
+    suggestions: "",
+    followUp: "",
     ratings: {
-      teamCollab: '1',
-      crossTeamCollab: '1',
-      workLifeBalance: '1',
-      productivity: '1',
-      motivation: '1',
-      orgInput: '1',
-      suggestions: ''
+      teamCollab: "1",
+      crossTeamCollab: "1",
+      workLifeBalance: "1",
+      productivity: "1",
+      motivation: "1",
+      orgInput: "1",
     },
-    followUp: ''
-  });
+  };
+
+  const [form, setForm] = useState(initialForm);
+  const [step, setStep] = useState(0);
+
+  const departments = [
+    "Software Development",
+    "Digital Marketing",
+    "Accounting",
+    "Data Analysis",
+    "Design",
+    "Cybersecurity",
+    "Product Management",
+    "Human Resources",
+  ];
+
+  const pages = [
+    [
+      ["fullName", "Full Name"],
+      ["department", "Department / Team"],
+      [
+        "wentWell",
+        "What went well this month? (Share your personal win, team win or anything)",
+      ],
+      ["didntGoWell", "What didn't go well or could have gone better?"],
+    ],
+    [
+      ["challenges", "Share Challenges, blockers or areas for improvement"],
+      ["lessons", "What did you learn this month?"],
+      ["shoutOuts", "Any Shout outs / appreciation for team members"],
+    ],
+    [
+      ["startDoing", "Start Doing"],
+      ["stopDoing", "Stop Doing"],
+      ["continueDoing", "Continue Doing"],
+    ],
+    [
+      ["teamCollab", "Team Collaboration"],
+      ["crossTeamCollab", "Cross-Team Collaboration"],
+      ["workLifeBalance", "Work-Life Balance"],
+      ["productivity", "Personal Productivity"],
+      ["motivation", "Motivation"],
+      ["orgInput", "Input at Organisation Level"],
+      ["suggestions", "Suggestions or ideas for improvement"],
+      ["followUp", "Would you like a follow-up conversation?"],
+    ],
+  ];
+
+  const isRating = (name) => Object.keys(form.ratings).includes(name);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name in form.ratings) {
+    if (isRating(name)) {
       setForm({
         ...form,
         ratings: {
           ...form.ratings,
-          [name]: value
-        }
+          [name]: value,
+        },
       });
     } else {
-      setForm({ ...form, [name]: value });
+      setForm({
+        ...form,
+        [name]: value,
+      });
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('https://feedback-9ahh.onrender.com/api/feedback', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(form),
-      });
+      const response = await fetch(
+        "https://feedback-9ahh.onrender.com/api/feedback",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        }
+      );
 
-      if (!response.ok) throw new Error('Failed to submit feedback');
-
-      const result = await response.json();
+      if (!response.ok) throw new Error("Failed to submit feedback");
       alert("✅ Feedback submitted successfully!");
-
-      setForm({
-        fullName: '',
-        department: '',
-        wentWell: '',
-        didntGoWell: '',
-        challenges: '',
-        lessons: '',
-        shoutOuts: '',
-        startDoing: '',
-        stopDoing: '',
-        continueDoing: '',
-        ratings: {
-          teamCollab: '1',
-          crossTeamCollab: '1',
-          workLifeBalance: '1',
-          productivity: '1',
-          motivation: '1',
-          orgInput: '1',
-          suggestions: ''
-        },
-        followUp: ''
-      });
-
+      setForm(initialForm);
+      setStep(0);
     } catch (error) {
-      console.error(' Submission error:', error);
-      alert("There was an error submitting your feedback. Please try again.");
+      console.error("Submission error:", error);
+      alert("There was an error submitting your feedback.");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-3xl mx-auto bg-white shadow-md rounded-lg p-6 space-y-4">
-      <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">Monthly Feedback Form</h2>
+    <form
+      onSubmit={handleSubmit}
+      className="max-w-2xl mx-auto bg-blue-700 text-white shadow-md rounded-lg p-6 space-y-4"
+    >
+      <h2 className="text-2xl font-bold mb-4 text-center">
+        Staff Monthly Feedback Form
+      </h2>
 
-      <div className="space-y-4">
-        {/* Text Inputs */}
-        {[
-          ['fullName', 'Full Name'],
-          ['department', 'Department / Team'],
-          ['wentWell', 'What went well this month?'],
-          ['didntGoWell', "What didn't go well?"],
-          ['challenges', 'Challenges or blockers'],
-          ['lessons', 'What did you learn this month?'],
-          ['shoutOuts', 'Shout outs / appreciation'],
-        ].map(([name, label]) => (
-          <div key={name}>
-            <label className="block font-medium mb-1">{label}</label>
+      {step === 2 && (
+        <p className="mb-2 font-semibold text-lg">
+          Let's improve our workflow/culture, what should we:
+        </p>
+      )}
+
+      {pages[step].map(([name, label]) => (
+        <div key={name}>
+          <label className="block font-semibold mb-1">{label}</label>
+
+          {name === "department" ? (
+            <select
+              name={name}
+              value={form[name]}
+              onChange={handleChange}
+              className="w-full p-2 border border-white text-black rounded-md"
+              required
+            >
+              <option value="">-- Select Department / Team --</option>
+              {departments.map((dep) => (
+                <option key={dep} value={dep}>
+                  {dep}
+                </option>
+              ))}
+            </select>
+          ) : name === "followUp" ? (
+            <select
+              name={name}
+              value={form[name]}
+              onChange={handleChange}
+              className="w-full p-2 border border-white text-black rounded-md"
+              required
+            >
+              <option value="">-- Select an option --</option>
+              <option value="Yes, please reach out">Yes, please reach out</option>
+              <option value="No, I am good">No, I am good</option>
+              <option value="Only if necessary">Only if necessary</option>
+            </select>
+          ) : isRating(name) ? (
+            <select
+              name={name}
+              value={form.ratings[name]}
+              onChange={handleChange}
+              className="w-full p-2 border border-white text-black rounded-md"
+            >
+              {[1, 2, 3, 4, 5].map((num) => (
+                <option key={num} value={num}>
+                  {num}
+                </option>
+              ))}
+            </select>
+          ) : (
             <textarea
               name={name}
               value={form[name]}
               onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md"
               rows={3}
-              required={name !== 'shoutOuts'}
+              className="w-full p-2 border border-white text-white rounded-md"
+              required={name !== "shoutOuts"}
             />
-          </div>
-        ))}
-
-        {/* Start/Stop/Continue */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {[
-            ['startDoing', 'Start Doing'],
-            ['stopDoing', 'Stop Doing'],
-            ['continueDoing', 'Continue Doing']
-          ].map(([name, label]) => (
-            <div key={name}>
-              <label className="block font-medium mb-1">{label}</label>
-              <input
-                name={name}
-                value={form[name]}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md"
-              />
-            </div>
-          ))}
+          )}
         </div>
+      ))}
 
-        {/* Ratings */}
-        <div>
-          <h3 className="font-semibold text-lg mt-4 mb-2">Rate the following (1–5)</h3>
-          {[
-            ['teamCollab', 'Collaboration with Team'],
-            ['crossTeamCollab', 'Collaboration Across Team'],
-            ['workLifeBalance', 'Work-Life Balance'],
-            ['productivity', 'Personal Productivity'],
-            ['motivation', 'Motivation'],
-            ['orgInput', 'Input at Organisation Level'],
-          ].map(([key, label]) => (
-            <div key={key} className="flex flex-col mb-2">
-              <label className="font-medium mb-1">{label}</label>
-              <select
-                name={key}
-                value={form.ratings[key]}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md"
-              >
-                {[1, 2, 3, 4, 5].map(num => (
-                  <option key={num} value={num}>{num}</option>
-                ))}
-              </select>
-            </div>
-          ))}
-        </div>
-
-        {/* Suggestions */}
-        <div>
-          <label className="block font-medium mb-1">Suggestions or ideas for improvement</label>
-          <textarea
-            name="suggestions"
-            value={form.ratings.suggestions}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md"
-            rows={3}
-          />
-        </div>
-
-        {/* Follow-up */}
-        <div>
-          <label className="block font-medium mb-1">Would you like a follow-up conversation?</label>
-          <select
-            name="followUp"
-            value={form.followUp}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md"
-            required
-          >
-            <option value="">-- Select an option --</option>
-            <option value="Yes, please reach out">Yes, please reach out</option>
-            <option value="No, I am good">No, I am good</option>
-            <option value="Only if necessary">Only if necessary</option>
-          </select>
-        </div>
-
+      {/* Navigation Buttons */}
+      <div className="flex justify-between pt-4">
         <button
-          type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md mt-4"
+          type="button"
+          onClick={() => setStep(step - 1)}
+          disabled={step === 0}
+          className="bg-white text-blue-700 font-semibold py-2 px-4 rounded disabled:opacity-50"
         >
-          Submit Feedback
+          Previous
         </button>
+
+        {step === pages.length - 1 ? (
+          <button
+            type="submit"
+            className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded"
+          >
+            Submit
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setStep(step + 1)}
+            className="bg-white text-blue-700 font-semibold py-2 px-4 rounded"
+          >
+            Next
+          </button>
+        )}
       </div>
     </form>
   );
