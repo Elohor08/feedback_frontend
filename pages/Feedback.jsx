@@ -15,17 +15,18 @@ const FeedbackForm = () => {
     suggestions: "",
     followUp: "",
     ratings: {
-      teamCollab: "1",
-      crossTeamCollab: "1",
-      workLifeBalance: "1",
-      productivity: "1",
-      motivation: "1",
-      orgInput: "1",
+      teamCollab: "",
+      crossTeamCollab: "",
+      workLifeBalance: "",
+      productivity: "",
+     
+      orgInput: "",
     },
   };
 
   const [form, setForm] = useState(initialForm);
   const [step, setStep] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const departments = [
     "Software Development",
@@ -63,7 +64,7 @@ const FeedbackForm = () => {
       ["crossTeamCollab", "Cross-Team Collaboration"],
       ["workLifeBalance", "Work-Life Balance"],
       ["productivity", "Personal Productivity"],
-      ["motivation", "Motivation"],
+     
       ["orgInput", "Input at Organisation Level"],
       ["suggestions", "Suggestions or ideas for improvement"],
       ["followUp", "Would you like a follow-up conversation?"],
@@ -92,6 +93,7 @@ const FeedbackForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
       const response = await fetch(
         "https://feedback-9ahh.onrender.com/api/feedback",
@@ -109,17 +111,34 @@ const FeedbackForm = () => {
     } catch (error) {
       console.error("Submission error:", error);
       alert("There was an error submitting your feedback.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <form
       onSubmit={handleSubmit}
-      className="max-w-2xl mx-auto bg-blue-700 text-white shadow-md rounded-lg p-6 space-y-4"
+      className="max-w-2xl mx-auto text-black shadow-md rounded-lg p-6 space-y-4"
     >
+      <div className="flex justify-center items-center">
+        <img
+          src="../src/assets/kinplusBlue (1).png"
+          alt=""
+          className="w-40 md:w-60"
+        />
+      </div>
       <h2 className="text-2xl font-bold mb-4 text-center">
         Staff Monthly Feedback Form
       </h2>
+
+      <p className="text-center text-gray-700 mb-4">
+        We value your voice! This monthly feedback form helps us understand your
+        experiences, challenges, and ideas so we can continue to grow together.
+        Your honest input is essential in improving our team culture,
+        productivity, and overall satisfaction. All responses are confidential
+        and will be used constructively.
+      </p>
 
       {step === 2 && (
         <p className="mb-2 font-semibold text-lg">
@@ -129,7 +148,7 @@ const FeedbackForm = () => {
 
       {step === 3 && (
         <p className="mb-2 font-semibold text-lg">
-          How would you rate the following? (1 - Poor, 5 - Excellent)
+          How would you rate the following? (1 - Poor, 2 - Fair, 3 - Good, 4 - Very good, 5 - Excellent)
         </p>
       )}
 
@@ -137,85 +156,111 @@ const FeedbackForm = () => {
         <div key={name}>
           <label className="block font-semibold mb-1">{label}</label>
 
-          {name === "department" ? (
-            <select
-              name={name}
-              value={form[name]}
-              onChange={handleChange}
-              className="w-full p-2 border border-white text-white bg-blue-700 rounded-md appearance-none"
-              required
-            >
-              <option className="bg-blue-700 text-white" value="">
-                -- Select Department / Team --
-              </option>
-              {departments.map((dep) => (
-                <option
-                  key={dep}
-                  value={dep}
-                  className="bg-blue-700 text-white"
+          {name === "department" || name === "followUp" ? (
+            <div className="relative">
+              <select
+                name={name}
+                value={form[name]}
+                onChange={handleChange}
+                className="w-full p-2 pr-10 border border-gray-300 text-black bg-white rounded-md appearance-none"
+                required
+              >
+                {name === "department" ? (
+                  <>
+                    <option value="">-- Select Department / Team --</option>
+                    {departments.map((dep) => (
+                      <option key={dep} value={dep}>
+                        {dep}
+                      </option>
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    <option value="">-- Select an option --</option>
+                    <option value="Yes, please reach out">
+                      Yes, please reach out
+                    </option>
+                    <option value="No, I am good">No, I am good</option>
+                    <option value="Only if necessary">Only if necessary</option>
+                  </>
+                )}
+              </select>
+
+              {/* Dropdown arrow */}
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                <svg
+                  className="w-4 h-4 text-blue-600"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  {dep}
-                </option>
-              ))}
-            </select>
-          ) : name === "followUp" ? (
-            <select
-              name={name}
-              value={form[name]}
-              onChange={handleChange}
-              className="w-full p-2 border border-white text-white bg-blue-700 rounded-md appearance-none"
-              required
-            >
-              <option className="bg-blue-700 text-white" value="">
-                -- Select an option --
-              </option>
-              <option className="bg-blue-700 text-white" value="Yes, please reach out">
-                Yes, please reach out
-              </option>
-              <option className="bg-blue-700 text-white" value="No, I am good">
-                No, I am good
-              </option>
-              <option className="bg-blue-700 text-white" value="Only if necessary">
-                Only if necessary
-              </option>
-            </select>
+                  <path
+                    d="M6 9l6 6 6-6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+            </div>
           ) : isRating(name) ? (
-            <select
-              name={name}
-              value={form.ratings[name]}
-              onChange={handleChange}
-              className="w-full p-2 border border-white text-white bg-blue-700 rounded-md appearance-none"
-            >
+            <div className="flex space-x-2">
               {[1, 2, 3, 4, 5].map((num) => (
-                <option
+                <button
                   key={num}
-                  value={num}
-                  className="bg-blue-700 text-white"
+                  type="button"
+                  onClick={() =>
+                    setForm((prev) => ({
+                      ...prev,
+                      ratings: {
+                        ...prev.ratings,
+                        [name]: String(num),
+                      },
+                    }))
+                  }
+                  className={`w-10 h-10 rounded-full border flex items-center justify-center font-bold transition
+                    ${
+                      form.ratings[name] === String(num)
+                        ? "bg-blue-600 text-white border-blue-600"
+                        : "bg-white text-blue-600 border-blue-600 hover:bg-blue-100"
+                    }`}
                 >
                   {num}
-                </option>
+                </button>
               ))}
-            </select>
+            </div>
           ) : (
             <textarea
               name={name}
               value={form[name]}
-              onChange={handleChange}
-              rows={3}
-              className="w-full p-2 border border-white text-white bg-blue-700 rounded-md"
+              onChange={(e) => {
+                handleChange(e);
+                e.target.style.height = "auto";
+                e.target.style.height = e.target.scrollHeight + "px";
+              }}
+              rows={1}
+              className="w-full p-2 border border-gray-300 text-black bg-white rounded-md resize-none overflow-hidden"
               required={name !== "shoutOuts"}
             />
           )}
         </div>
       ))}
 
-      {/* Navigation Buttons */}
+      {/* Progress Bar */}
+      <div className="w-full bg-gray-200 h-3 rounded-full overflow-hidden mt-6">
+        <div
+          className="bg-blue-600 h-3 transition-all duration-300"
+          style={{ width: `${((step + 1) / pages.length) * 100}%` }}
+        />
+      </div>
+
       <div className="flex justify-between pt-4">
         <button
           type="button"
           onClick={() => setStep(step - 1)}
           disabled={step === 0}
-          className="bg-white text-blue-700 font-semibold py-2 px-4 rounded disabled:opacity-50"
+          className="bg-blue text-blue-700 font-semibold py-2 px-4 rounded disabled:opacity-50"
         >
           Previous
         </button>
@@ -223,9 +268,14 @@ const FeedbackForm = () => {
         {step === pages.length - 1 ? (
           <button
             type="submit"
-            className="bg-white text-blue-700  py-2 px-4 rounded"
+            disabled={isSubmitting}
+            className="bg-white text-blue-700 font-semibold py-2 px-4 rounded flex items-center justify-center"
           >
-            Submit
+            {isSubmitting ? (
+              <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-blue-700"></span>
+            ) : (
+              "Submit"
+            )}
           </button>
         ) : (
           <button
