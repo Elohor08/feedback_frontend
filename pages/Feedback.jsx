@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import logo from "../src/assets/kinpluslogo.png"
 
 const FeedbackForm = () => {
   const initialForm = {
@@ -123,7 +124,7 @@ const FeedbackForm = () => {
     >
       <div className="flex justify-center items-center">
         <img
-          src="../src/assets/kinplusBlue (1).png"
+          src={logo}
           alt=""
           className="w-40 md:w-60"
         />
