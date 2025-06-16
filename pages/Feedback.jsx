@@ -38,6 +38,8 @@ const FeedbackForm = () => {
     "Cybersecurity",
     "Product Management",
     "Human Resources",
+    "Administration",
+     "Hardware",
   ];
 
   const pages = [
